@@ -2,3 +2,5 @@ qrcode.png
 .vscode
 __pycache__
 /uploads/
+settings.txt
+resources/qrcode.png

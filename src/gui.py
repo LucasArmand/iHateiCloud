@@ -3,7 +3,7 @@ from PIL import Image, ImageTk
 from tkinter.filedialog import askdirectory
 import os
 import sys
-
+import config
 
 class GUI:
     def __init__(self, app):
@@ -12,17 +12,18 @@ class GUI:
         self.root = tk.Tk()
         self.root.title("iHateiCloud")
 
-        self.root.minsize(1200, 0)
+        self.root.minsize(1000, 0)
 
-        qr_code = Image.open("qrcode.png")
+        qr_code = Image.open("resources/qrcode.png")
         photo = ImageTk.PhotoImage(qr_code)
 
 
         # Set the icon
-        self.root.iconbitmap(f"{os.getcwd()}\\icon.ico")
+        self.root.iconbitmap(f"{os.getcwd()}\\resources\\icon.ico")
 
-        self.label_text = tk.Label(self.root, text=f"Current Directory: {app.config['UPLOAD_FOLDER']}", font=('Arial', 24))
-        self.label_text.pack()
+        # 
+        self.upload_path_label = tk.Label(self.root, text=f"{app.config['upload_path']}", font=('Arial', 24))
+        self.upload_path_label.pack()
 
         self.qr_code = tk.Label(self.root, image=photo)
         self.qr_code.image = photo
@@ -36,17 +37,17 @@ class GUI:
         self.root.mainloop()
 
     def on_closing(self):
-        os._exit(1)
+        os._exit(1) # Kill app
 
     def upload_location_dialog(self):
         path = askdirectory()
-        print("user chose", path)
         check = self.is_valid_path(path)
         if check[0]:
-            self.app.config["UPLOAD_FOLDER"] = path
-            self.label_text.config(text=f"{path}")
+            config.write_setting("upload_path", path)        # Update settings
+            self.app.config["upload_path"] = path            # Update Flask upload path
+            self.upload_path_label.config(text=f"{path}")    # Update GUI text
         else:
-            print(check[1])
+            self.upload_path_label.config(text=f"{check[1]}") 
         
 
     def is_valid_path(self, path):

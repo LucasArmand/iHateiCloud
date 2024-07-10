@@ -14,15 +14,14 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
-        return "No file part"
-    file = request.files['file']
-    if file.filename == '':
-        return "No selected file"
-    if file:
+    files = request.files.getlist("files")
+    for file in files:
         filename = file.filename
+        print(f"saving {filename}")
         file.save(os.path.join(app.config['upload_path'], filename))
-        return f'File {filename} uploaded successfully!'
+    utils.convert_heic_to_jpg(app.config["upload_path"])
+    
+    return "Files uploaded successfully"
 
 
 if __name__ == '__main__':
